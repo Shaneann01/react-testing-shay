@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <div :class="{image-container}">
+    <img src="public/logo.png" alt="Productive Plant Logo" :class="{logo}">
+    </div>
+    <title>Productive Plant!</title>
+    <style>
+        span.complete{
+            text-decoration: line-through;
+        }
+        span.incomplete{
+            color: red;
+        }
+
+        p.title{
+            color: green;
+            text-decoration-line: underline;
+        }
+
+        p.objectives{
+            color: rgb(25, 176, 226);
+            text-decoration-line: underline;
+        }
+        img.logo{
+            max-width: 50px;
+        }
+       
+        
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <p :class="{title}" v-html="title" ></p>
+
+        <p>Plant(name): {{ plant }}</p>
+
+        <p>Health: {{ health }}</p>
+
+        <p :class="{objectives}">{{ objectives }}</p>
+
+        <span v-if="visible">This is hidden.</span>
+
+        <input type="text" placeholder="Enter Objectives Here" v-model="madeObj">
+
+        <button @click="create">Create!</button>
+
+        <p> {{madeObj}} </p>
+
+        <ol>
+            <li v-for="(item,index) in items"> 
+                <span :class="{complete: item.complete, incomplete: ! item.complete}">
+                {{ item.text }}<button v-on:click="check(item)" >Check</button> <button @click="uncheck(item)">Uncheck</button>
+                </span>
+            </li>
+        </ol>
+
+
+        <button @click="eod"> End Of Day! </button>
+        <p>{{error}} </p>
+    </div>
+    
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                title: "Welcome to Productive Plant!\n",
+                objectives: "\nCreate your Objectives!",
+                visible: false,
+                items: [ ],
+                plant: "Productive Plant",
+                health: 100,
+                madeObj: "",
+                error: "",
+            },
+            methods: {
+                check: function(item){
+                    item.complete = true;
+                },
+                uncheck: function(item){
+                    item.complete = false;
+                },
+                create: function(){
+                    if(this.madeObj.trim() !== ''){
+                    this.items.push({text: this.madeObj, complete: false});
+                    this.madeObj = " ";
+                    }
+                },
+                eod: function(){
+                    if(this.items.length < 3){
+                    this.error = "Please add a min of 3 objectives!"
+                    return this.error;
+                    }
+                    if(!this.items.every(item => item.complete)){
+                        this.error = "";
+                        this.health -= 1;
+                    }
+                    if(!this.items.some(item => !item.complete) && this.health < 100){
+                        this.error=""
+                        this.health += 1;
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
